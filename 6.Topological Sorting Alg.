@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+int adj[MAX][MAX]; // Adjacency matrix
+int in_degree[MAX]; // In-degree array
+int queue[MAX], front = 0, rear = 0;
+int vertices;
+
+void enqueue(int v) {
+    queue[rear++] = v;
+}
+
+int dequeue() {
+    return queue[front++];
+}
+
+void topologicalSort() {
+    // Compute in-degree of each vertex
+    for (int i = 0; i < vertices; i++) {
+        in_degree[i] = 0;
+        for (int j = 0; j < vertices; j++) {
+            if (adj[j][i] == 1)
+                in_degree[i]++;
+        }
+    }
+
+    // Enqueue all vertices with zero in-degree
+    for (int i = 0; i < vertices; i++) {
+        if (in_degree[i] == 0)
+            enqueue(i);
+    }
+
+    int count = 0; // To keep track of visited vertices
+    while (front < rear) {
+        int v = dequeue();
+        printf("%d ", v);
+        count++;
+
+        // Reduce in-degree of adjacent vertices
+        for (int i = 0; i < vertices; i++) {
+            if (adj[v][i] == 1) {
+                in_degree[i]--;
+                if (in_degree[i] == 0)
+                    enqueue(i);
+            }
+        }
+    }
+
+    if (count != vertices) {
+        printf("\nGraph has a cycle!");
+    }
+}
+
+int main() {
+    printf("Enter number of vertices: ");
+    scanf("%d", &vertices);
+
+    printf("Enter adjacency matrix:\n");
+    for (int i = 0; i < vertices; i++)
+        for (int j = 0; j < vertices; j++)
+            scanf("%d", &adj[i][j]);
+
+    printf("Topological Sort Order:\n");
+    topologicalSort();
+
+    return 0;
+}
+output:
+Enter number of vertices: 6
+Enter adjacency matrix:
+0 1 1 0 0 0
+0 0 0 1 0 0
+0 0 0 1 1 0
+0 0 0 0 1 1
+0 0 0 0 0 1
+0 0 0 0 0 0
